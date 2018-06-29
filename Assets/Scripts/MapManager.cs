@@ -46,7 +46,7 @@ namespace forth {
                 if (systemConnection != null)
                     starSystemConnections.Add(systemConnection);
             }
-            connectBlindSystems();
+            //connectBlindSystems();
         }
 
         void connectBlindSystems()
@@ -55,7 +55,6 @@ namespace forth {
             {
                 if(blindSystem.GetSystemConnections().Count == 1)
                 {
-                    blindSystem.SetSystemName("!!!");
                     StarSystemConnection systemConnection = blindSystem.ConnectToClosest(starSystems);
                     if (systemConnection != null)
                         starSystemConnections.Add(systemConnection);

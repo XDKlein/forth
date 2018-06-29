@@ -77,7 +77,7 @@ namespace forth {
             StarSystem destination = null;
             foreach (StarSystem starSystem in starSystems)
             {
-                if (this == starSystem)
+                if (this == starSystem || this.IsIntersecting(starSystem, starSystems))
                     continue;
 
                 float calculatedDistance = this.DistanceTo(starSystem);
@@ -95,6 +95,21 @@ namespace forth {
                 }
             }
             return destination != null ? new StarSystemConnection(this, destination) : null;
+        }
+
+        public bool IsIntersecting(StarSystem destination, List<StarSystem> systems)
+        {
+            foreach(StarSystem system in systems)
+            {
+                foreach(StarSystemConnection connection in system.systemConnections)
+                {
+                    if (connection.IsConnecting(this) || connection.IsConnecting(destination))
+                        continue;
+                    if (connection.IsIntersectableBy(this, destination))
+                        return true;
+                }
+            }
+            return false;
         }
 
         public List<StarSystem> GetConnectedNeighbours()

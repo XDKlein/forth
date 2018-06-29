@@ -48,10 +48,19 @@ namespace forth
             }
             return destination;
         }
+        public bool IsConnecting(StarSystem system)
+        {
+            return Array.IndexOf(starSystems, system) >= 0;
+        }
 
         public StarSystem[] GetStarSystems()
         {
             return starSystems;
         } 
+
+        public bool IsIntersectableBy(StarSystem origin, StarSystem destination)
+        {
+            return Utility.LineIntesection(this.starSystems[0].GetSystemPosition(), this.starSystems[1].GetSystemPosition(), origin.GetSystemPosition(), destination.GetSystemPosition());
+        }
     }
 }
