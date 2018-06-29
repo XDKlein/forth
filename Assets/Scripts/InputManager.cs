@@ -8,7 +8,7 @@ namespace forth
     {
         public static InputManager instance = null;
 
-        public CameraController camera = null;
+        private CameraController camera = null;
 
         void Awake()
         {
@@ -23,17 +23,27 @@ namespace forth
 
         private void LateUpdate()
         {
-
             if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
             {
                 camera.Move(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
             }
 
-            if (Input.GetAxis("Mouse ScrollWheel") != 0)
+            if (GetScroll() != 0)
             {
-                camera.Scroll(Input.GetAxis("Mouse ScrollWheel"));
+                camera.Scroll(GetScroll());
             }
+        }
 
+        private float scrollValue = 0f;
+        private float GetScroll()
+        {
+            float sensitivity = 3f;
+            float dead = 0.001f;
+
+            float target = Input.GetAxisRaw("Mouse ScrollWheel");
+            scrollValue = Mathf.MoveTowards(scrollValue,
+                          target, sensitivity * Time.deltaTime);
+            return (Mathf.Abs(scrollValue) < dead) ? 0f : scrollValue;
         }
     }
 }

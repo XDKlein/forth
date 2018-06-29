@@ -8,119 +8,43 @@ namespace forth
     [Serializable]
     public class InputControls
     {
-        private KeyCode moveLeft = KeyCode.A;
-        private KeyCode moveRight = KeyCode.W;
-        private KeyCode moveUp = KeyCode.W;
-        private KeyCode moveDown = KeyCode.S;
+        static Dictionary<string, KeyCode> keyMapping;
 
-        private KeyCode zoomIn = KeyCode.Z;
-        private KeyCode zoomOut = KeyCode.X;
-
-        private KeyCode leftClick = KeyCode.Mouse0;
-        private KeyCode rightClick = KeyCode.Mouse1;
-
-        public KeyCode MoveLeft
+        static string[] keyMaps = new string[]
         {
-            get
-            {
-                return moveLeft;
-            }
+            "Up",
+            "Down",
+            "Left",
+            "Right"
+        };
 
-            set
+        static KeyCode[] defaults = new KeyCode[]
+        {
+            KeyCode.W,
+            KeyCode.S,
+            KeyCode.A,
+            KeyCode.D
+        };
+
+        static InputControls()
+        {
+            keyMapping = new Dictionary<string, KeyCode>();
+            for (int i = 0; i < keyMaps.Length; ++i)
             {
-                moveLeft = value;
+                keyMapping.Add(keyMaps[i], defaults[i]);
             }
         }
 
-        public KeyCode MoveRight
+        public static void SetKeyMap(string keyMap, KeyCode key)
         {
-            get
-            {
-                return moveRight;
-            }
-
-            set
-            {
-                moveRight = value;
-            }
+            if (!keyMapping.ContainsKey(keyMap))
+                throw new ArgumentException("Invalid KeyMap in SetKeyMap: " + keyMap);
+            keyMapping[keyMap] = key;
         }
 
-        public KeyCode MoveUp
+        public static bool GetKeyDown(string keyMap)
         {
-            get
-            {
-                return moveUp;
-            }
-
-            set
-            {
-                moveUp = value;
-            }
-        }
-
-        public KeyCode MoveDown
-        {
-            get
-            {
-                return moveDown;
-            }
-
-            set
-            {
-                moveDown = value;
-            }
-        }
-
-        public KeyCode ZoomIn
-        {
-            get
-            {
-                return zoomIn;
-            }
-
-            set
-            {
-                zoomIn = value;
-            }
-        }
-
-        public KeyCode ZoomOut
-        {
-            get
-            {
-                return zoomOut;
-            }
-
-            set
-            {
-                zoomOut = value;
-            }
-        }
-
-        public KeyCode LeftClick
-        {
-            get
-            {
-                return leftClick;
-            }
-
-            set
-            {
-                leftClick = value;
-            }
-        }
-
-        public KeyCode RightClick
-        {
-            get
-            {
-                return rightClick;
-            }
-
-            set
-            {
-                rightClick = value;
-            }
+            return Input.GetKeyDown(keyMapping[keyMap]);
         }
     }
 }

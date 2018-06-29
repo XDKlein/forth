@@ -19,6 +19,7 @@ namespace forth
             panLimit = GameManager.instance.map.mapSize;
             Camera.main.transform.position = new Vector3(0, 0, -10);
             this.gameObject.GetComponent<Camera>().orthographicSize = (minZ + maxZ) / 2;
+            this.maxZ = (panLimit.x / 2) * Screen.height / Screen.width;
         }
 
         void LateUpdate()
@@ -44,8 +45,17 @@ namespace forth
 
         public void Scroll(float zoom)
         {
-            float newPosition = this.gameObject.GetComponent<Camera>().orthographicSize - zoom * scrollSpeed * Time.deltaTime;
-            this.gameObject.GetComponent<Camera>().orthographicSize = Mathf.Clamp(newPosition, minZ, maxZ);
+            float currentZoom = this.gameObject.GetComponent<Camera>().orthographicSize;
+            float zoomExtent = (panLimit.x / 2) * Screen.height / Screen.width;
+            float newZoom = currentZoom - zoom * scrollSpeed * Time.deltaTime;
+
+            newZoom = Mathf.Clamp(newZoom, minZ, maxZ);
+
+            if (newZoom >= zoomExtent)
+                this.gameObject.GetComponent<Camera>().orthographicSize = zoomExtent;
+            else
+                this.gameObject.GetComponent<Camera>().orthographicSize = newZoom;
+
             transform.position = SetIntoBorders(transform.position);
         }
 
