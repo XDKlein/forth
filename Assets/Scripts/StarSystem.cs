@@ -11,7 +11,8 @@ namespace forth {
         private GameObject systemGameObject = null;
         //private Player systemOwner = null;
         private Vector2 systemPosition = new Vector2(0, 0);
-        
+
+        private StarSector systemSector = null;
         private List<Planet> systemPlanets = new List<Planet>();
 
         private List<StarSystemConnection> systemConnections = new List<StarSystemConnection>();
