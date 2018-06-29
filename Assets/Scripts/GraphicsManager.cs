@@ -50,45 +50,45 @@ namespace forth
         void SetupSolarSystems()
         {
             GameObject solParent = new GameObject("Systems");
-            foreach (StarSystem sol in GameManager.instance.map.GetStarSystems())
+            foreach (StarSystem sol in GameManager.instance.map.StarSystems)
             {
                 GameObject systemGameObject = Instantiate(GraphicsManager.instance.starSprites[0]);
 
                 //TODO: Move to interface processing.
                 GameObject systemTitle = Instantiate(GraphicsManager.instance.systemTitle);
-                systemTitle.GetComponent<TextMesh>().text = sol.GetSystemName();
+                systemTitle.GetComponent<TextMesh>().text = sol.Name;
                 systemTitle.transform.SetParent(systemGameObject.transform);
                 //
 
                 systemGameObject.transform.SetParent(solParent.transform);
-                Vector2 systemPosition = sol.GetSystemPosition();
+                Vector2 systemPosition = sol.Position;
                 systemGameObject.transform.position = new Vector3(systemPosition.x - Random.Range(-0.5f, 0.5f),
                                                                   systemPosition.y - Random.Range(-0.5f, 0.5f),
                                                                   -1);
                 float scale = Random.Range(0, 0.5f);
                 systemGameObject.transform.localScale = new Vector3(1 - scale, 1 - scale, 1);
-                sol.SetSystemGameObject(systemGameObject);
+                sol.GameObject = systemGameObject;
             }
         }
 
         void SetupSystemsConnections()
         {
             GameObject connectionsParent = new GameObject("Connections");
-            foreach (StarSystemConnection connection in GameManager.instance.map.GetStarSystemsConnections())
+            foreach (StarSystemConnection connection in GameManager.instance.map.StarSystemConnections)
             {
                 GameObject connectionGameObject = Instantiate(GraphicsManager.instance.connectionLine);
 
                 connectionGameObject.transform.SetParent(connectionsParent.transform);
-                StarSystem[] connectedSystems = connection.GetStarSystems();
+                StarSystem[] connectedSystems = connection.StarSystems;
 
                 //Setting start and end point of line.
                 connectionGameObject.GetComponent<LineRenderer>().SetPosition(0, new Vector3(
-                    connectedSystems[0].GetSystemGameObject().transform.position.x, connectedSystems[0].GetSystemGameObject().transform.position.y));
+                    connectedSystems[0].GameObject.transform.position.x, connectedSystems[0].GameObject.transform.position.y));
                 connectionGameObject.GetComponent<LineRenderer>().SetPosition(1, new Vector3(
-                    connectedSystems[1].GetSystemGameObject().transform.position.x, connectedSystems[1].GetSystemGameObject().transform.position.y));
+                    connectedSystems[1].GameObject.transform.position.x, connectedSystems[1].GameObject.transform.position.y));
                 //
 
-                connection.SetConnectionGameObject(connectionGameObject);
+                connection.GameObject = connectionGameObject;
             }
         }
     }

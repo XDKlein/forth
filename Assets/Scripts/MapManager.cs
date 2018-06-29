@@ -13,6 +13,32 @@ namespace forth {
         private List<StarSystem> starSystems = new List<StarSystem>();
         private List<StarSystemConnection> starSystemConnections = new List<StarSystemConnection>();
 
+        public List<StarSystem> StarSystems
+        {
+            get
+            {
+                return starSystems;
+            }
+
+            set
+            {
+                starSystems = value;
+            }
+        }
+
+        public List<StarSystemConnection> StarSystemConnections
+        {
+            get
+            {
+                return starSystemConnections;
+            }
+
+            set
+            {
+                starSystemConnections = value;
+            }
+        }
+
         ///<summary>
         ///This is a description of my function.
         ///</summary>
@@ -33,31 +59,31 @@ namespace forth {
                     continue;
 
                 positions.Add(position);
-                starSystems.Add(new StarSystem(position));
+                StarSystems.Add(new StarSystem(position));
                 count++;
             }
         }
 
         void ConnectStarSystems()
         {
-            foreach(StarSystem origin in starSystems)
+            foreach(StarSystem origin in StarSystems)
             {
-                StarSystemConnection systemConnection = origin.ConnectToClosest(starSystems);
+                StarSystemConnection systemConnection = origin.ConnectToClosest(StarSystems);
                 if (systemConnection != null)
-                    starSystemConnections.Add(systemConnection);
+                    StarSystemConnections.Add(systemConnection);
             }
             //connectBlindSystems();
         }
 
         void connectBlindSystems()
         {
-            foreach(StarSystem blindSystem in starSystems)
+            foreach(StarSystem blindSystem in StarSystems)
             {
-                if(blindSystem.GetSystemConnections().Count == 1)
+                if(blindSystem.Connections.Count == 1)
                 {
-                    StarSystemConnection systemConnection = blindSystem.ConnectToClosest(starSystems);
+                    StarSystemConnection systemConnection = blindSystem.ConnectToClosest(StarSystems);
                     if (systemConnection != null)
-                        starSystemConnections.Add(systemConnection);
+                        StarSystemConnections.Add(systemConnection);
                 }
             }
         }
@@ -105,16 +131,6 @@ namespace forth {
                         return false;
             }
             return true;
-        }
-
-        public List<StarSystem> GetStarSystems()
-        {
-            return starSystems;
-        }
-
-        public List<StarSystemConnection> GetStarSystemsConnections()
-        {
-            return starSystemConnections;
         }
     }
 }

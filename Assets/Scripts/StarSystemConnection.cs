@@ -9,33 +9,62 @@ namespace forth
     public class StarSystemConnection
     {
         private StarSystem[] starSystems = new StarSystem[2];
-        private GameObject connectionObject;
-        private float connectionLength;
+        private GameObject gameObject;
+        private float length;
+
+        public StarSystem[] StarSystems
+        {
+            get
+            {
+                return starSystems;
+            }
+
+            set
+            {
+                starSystems = value;
+            }
+        }
+
+        public GameObject GameObject
+        {
+            get
+            {
+                return gameObject;
+            }
+
+            set
+            {
+                gameObject = value;
+            }
+        }
+
+        public float ConnectionLength
+        {
+            get
+            {
+                return length;
+            }
+
+            set
+            {
+                length = value;
+            }
+        }
 
         public StarSystemConnection(StarSystem aStarSystem, StarSystem bStarSystem)
         {
-            starSystems[0] = aStarSystem;
-            starSystems[1] = bStarSystem;
-            aStarSystem.AddSystemConnection(this);
-            bStarSystem.AddSystemConnection(this);
-        }
-
-        public GameObject GetConnectionGameObject()
-        {
-            return connectionObject;
-        }
-
-        public void SetConnectionGameObject(GameObject connectionObject)
-        {
-            this.connectionObject = connectionObject;
+            StarSystems[0] = aStarSystem;
+            StarSystems[1] = bStarSystem;
+            aStarSystem.Connections.Add(this);
+            bStarSystem.Connections.Add(this);
         }
 
         public StarSystem GetNeighbour(StarSystem origin)
         {
             StarSystem destination = null;
-            if (starSystems.Length > 0)
+            if (StarSystems.Length > 0)
             {
-                foreach (StarSystem system in starSystems)
+                foreach (StarSystem system in StarSystems)
                 {
                     if (system == origin)
                         continue;
@@ -50,17 +79,12 @@ namespace forth
         }
         public bool IsConnecting(StarSystem system)
         {
-            return Array.IndexOf(starSystems, system) >= 0;
+            return Array.IndexOf(StarSystems, system) >= 0;
         }
-
-        public StarSystem[] GetStarSystems()
-        {
-            return starSystems;
-        } 
 
         public bool IsIntersectableBy(StarSystem origin, StarSystem destination)
         {
-            return Utility.LineIntesection(this.starSystems[0].GetSystemPosition(), this.starSystems[1].GetSystemPosition(), origin.GetSystemPosition(), destination.GetSystemPosition());
+            return Utility.LineIntesection(this.StarSystems[0].Position, this.StarSystems[1].Position, origin.Position, destination.Position);
         }
     }
 }

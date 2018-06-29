@@ -7,58 +7,97 @@ namespace forth {
     [Serializable]
     public class StarSystem
     {
-        private string systemName = "System";
-        private GameObject systemGameObject = null;
+        private string name = "System";
+        private GameObject gameObject = null;
         //private Player systemOwner = null;
-        private Vector2 systemPosition = new Vector2(0, 0);
+        private Vector2 position = new Vector2(0, 0);
 
-        private StarSector systemSector = null;
-        private List<Planet> systemPlanets = new List<Planet>();
+        private StarSector sector = null;
+        private List<Planet> planets = new List<Planet>();
 
-        private List<StarSystemConnection> systemConnections = new List<StarSystemConnection>();
+        private List<StarSystemConnection> connections = new List<StarSystemConnection>();
 
-        public StarSystem(Vector2 systemPosition)
+        public string Name
         {
-            this.systemPosition = systemPosition;
+            get
+            {
+                return name;
+            }
+
+            set
+            {
+                name = value;
+            }
         }
 
-        public string GetSystemName()
+        public GameObject GameObject
         {
-            return this.systemName;
+            get
+            {
+                return gameObject;
+            }
+
+            set
+            {
+                gameObject = value;
+            }
         }
 
-        public void SetSystemName(string systemName)
+        public Vector2 Position
         {
-            this.systemName = systemName;
+            get
+            {
+                return position;
+            }
+
+            set
+            {
+                position = value;
+            }
         }
 
-        public GameObject GetSystemGameObject()
+        public StarSector Sector
         {
-            return systemGameObject;
-        }
-        public void SetSystemGameObject(GameObject systemGameObject)
-        {
-            this.systemGameObject = systemGameObject;
+            get
+            {
+                return sector;
+            }
+
+            set
+            {
+                sector = value;
+            }
         }
 
-        public Vector2 GetSystemPosition()
+        public List<Planet> Planets
         {
-            return systemPosition;
+            get
+            {
+                return planets;
+            }
+
+            set
+            {
+                planets = value;
+            }
         }
 
-        public void SetSystemConnections(List<StarSystemConnection> systemConnections)
+        public List<StarSystemConnection> Connections
         {
-            this.systemConnections = systemConnections;
+            get
+            {
+                return connections;
+            }
+
+            set
+            {
+                connections = value;
+            }
         }
 
-        public void AddSystemConnection(StarSystemConnection systemConnection)
+        public StarSystem(Vector2 position)
         {
-            systemConnections.Add(systemConnection);
-        }
-
-        public List<StarSystemConnection> GetSystemConnections()
-        {
-            return systemConnections;
+            this.position = position;
         }
 
         public bool IsConnectedTo(StarSystem system)
@@ -69,7 +108,7 @@ namespace forth {
 
         public float DistanceTo(StarSystem system)
         {
-            return Vector2.Distance(this.GetSystemPosition(), system.GetSystemPosition());
+            return Vector2.Distance(this.Position, system.Position);
         }
 
         public StarSystemConnection ConnectToClosest(List<StarSystem> starSystems)
@@ -102,7 +141,7 @@ namespace forth {
         {
             foreach(StarSystem system in systems)
             {
-                foreach(StarSystemConnection connection in system.systemConnections)
+                foreach(StarSystemConnection connection in system.Connections)
                 {
                     if (connection.IsConnecting(this) || connection.IsConnecting(destination))
                         continue;
@@ -115,10 +154,10 @@ namespace forth {
 
         public List<StarSystem> GetConnectedNeighbours()
         {
-            if (systemConnections.Count <= 0)
+            if (this.Connections.Count <= 0)
                 return null;
             List<StarSystem> neighbours = new List<StarSystem>();
-            foreach(StarSystemConnection connection in systemConnections)
+            foreach(StarSystemConnection connection in this.Connections)
             {
                 neighbours.Add(connection.GetNeighbour(this));
             }
