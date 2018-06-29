@@ -12,63 +12,52 @@ namespace forth
         public float minZ = 10f;
         public float maxZ = 120f;
 
-        private float camSize;
-        private Vector2 panLimit;
+        public Vector2 panLimit;
+
         void Start()
         {
             panLimit = GameManager.instance.map.mapSize;
             Camera.main.transform.position = new Vector3(0, 0, -10);
-            camSize = (minZ + maxZ) / 2;
+            this.gameObject.GetComponent<Camera>().orthographicSize = (minZ + maxZ) / 2;
         }
 
         void LateUpdate()
         {
-            Vector3 pos = transform.position;
+            
+        }
 
-            if (Input.GetKey("d") || Input.mousePosition.x >= Screen.width - panBorderThickness)
-            {
-                pos.x += Time.deltaTime * panSpeed;
-            }
-            else if (Input.GetKey("a") || Input.mousePosition.x <= panBorderThickness)
-            {
-                pos.x -= Time.deltaTime * panSpeed;
-            }
+        public void Move(float vertical, float horizontal)
+        {
+            Vector3 newPosition = transform.position;
 
-            if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panBorderThickness)
+            if (vertical != 0)
             {
-                pos.y += Time.deltaTime * panSpeed;
+                newPosition.y += vertical * Time.deltaTime * panSpeed;
             }
-            else if (Input.GetKey("s") || Input.mousePosition.y <= panBorderThickness)
+            if(horizontal != 0)
             {
-                pos.y -= Time.deltaTime * panSpeed;
+                newPosition.x += horizontal * Time.deltaTime * panSpeed;
             }
 
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll != 0)
-            {
-                camSize -= scroll * scrollSpeed * 100f * Time.deltaTime;
-                camSize = Mathf.Clamp(camSize, minZ, maxZ);
-                camSize = Mathf.Round(camSize * 10f) / 10f;
-            }
+            transform.position = SetIntoBorders(newPosition);
+        }
 
-            Camera.main.orthographicSize = Mathf.Round(Camera.main.orthographicSize * 10f) / 10f;
-            if (Camera.main.orthographicSize < camSize)
-            {
-                Camera.main.orthographicSize += 0.1f;
-                //GraphicsManager.instance.parallaxLayer.GetComponent<BackgroundController>().Rescale();
-            }
-            else if (Camera.main.orthographicSize > camSize)
-            {
-                Camera.main.orthographicSize -= 0.1f;
-                //GraphicsManager.instance.parallaxLayer.GetComponent<BackgroundController>().Rescale();
-            }
+        public void Scroll(float zoom)
+        {
+            float newPosition = this.gameObject.GetComponent<Camera>().orthographicSize - zoom * scrollSpeed * Time.deltaTime;
+            this.gameObject.GetComponent<Camera>().orthographicSize = Mathf.Clamp(newPosition, minZ, maxZ);
+            transform.position = SetIntoBorders(transform.position);
+        }
 
-            float vertExtent = Camera.main.orthographicSize;
+        public Vector3 SetIntoBorders(Vector3 newPosition)
+        {
+            float vertExtent = this.gameObject.GetComponent<Camera>().orthographicSize;
             float horzExtent = vertExtent * Screen.width / Screen.height;
 
-            pos.x = Mathf.Clamp(pos.x , -panLimit.x / 2 + horzExtent, panLimit.x / 2 - horzExtent);
-            pos.y = Mathf.Clamp(pos.y, -panLimit.y / 2 + vertExtent, panLimit.y / 2 - vertExtent);
-            transform.position = pos;
+            newPosition.x = Mathf.Clamp(newPosition.x, -panLimit.x / 2 + horzExtent, panLimit.x / 2 - horzExtent);
+            newPosition.y = Mathf.Clamp(newPosition.y, -panLimit.y / 2 + vertExtent, panLimit.y / 2 - vertExtent);
+
+            return newPosition;
         }
     }
 }

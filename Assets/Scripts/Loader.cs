@@ -6,17 +6,19 @@ namespace forth
 {
     public class Loader : MonoBehaviour
     {
+        public GameObject inputManager;
+        public GameObject gameManager;
+        public GameObject graphicsManager;
+        public GameObject playerManager;
+        public GameObject soundManager;
 
-        public GameObject gameManager;          //GameManager prefab to instantiate.
-        public GameObject graphicsManager;      //GraphicsManager prefab to instantiate.
-        public GameObject playerManager;      //GraphicsManager prefab to instantiate.
-        public GameObject soundManager;         //SoundManager prefab to instantiate.
-
-        public Font font;         //SoundManager prefab to instantiate.
+        public Font font;
 
         void Awake()
         {
-            //Check if a GameManager has already been assigned to static variable GameManager.instance or if it's still null
+            if (InputManager.instance == null)
+                Instantiate(inputManager);
+
             if (GameManager.instance == null)
                 Instantiate(gameManager);
 
@@ -27,12 +29,6 @@ namespace forth
                 Instantiate(playerManager);
 
             font.material.mainTexture.filterMode = FilterMode.Point;
-
-            ////Check if a SoundManager has already been assigned to static variable GameManager.instance or if it's still null
-            //if (SoundManager.instance == null)
-
-            //    //Instantiate SoundManager prefab
-            //    Instantiate(soundManager);
         }
     }
 }
