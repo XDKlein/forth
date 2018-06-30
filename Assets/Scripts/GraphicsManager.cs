@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace forth
 {
@@ -56,7 +57,7 @@ namespace forth
 
                 //TODO: Move to interface processing.
                 GameObject systemTitle = Instantiate(GraphicsManager.instance.systemTitle);
-                systemTitle.GetComponent<TextMesh>().text = sol.Name;
+                systemTitle.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = sol.Name;
                 systemTitle.transform.SetParent(systemGameObject.transform);
                 //
 

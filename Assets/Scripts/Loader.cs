@@ -12,8 +12,6 @@ namespace forth
         public GameObject playerManager;
         public GameObject soundManager;
 
-        public Font font;
-
         void Awake()
         {
             if (InputManager.instance == null)
@@ -27,8 +25,6 @@ namespace forth
 
             if (PlayerManager.instance == null)
                 Instantiate(playerManager);
-
-            font.material.mainTexture.filterMode = FilterMode.Point;
         }
     }
 }
