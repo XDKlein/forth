@@ -50,5 +50,20 @@ namespace forth
 
             return isIntersect;
         }
+
+        public static float PointToLineDistance(Vector2 point, Vector2 lineStart, Vector2 lineEnd)
+        {
+            Vector2 v = lineEnd - lineStart;
+            Vector2 w = point - lineStart;
+            float c1 = Vector2.Dot(w, v);
+            if (c1 <= 0)
+                return Vector2.Distance(point, lineStart);
+            float c2 = Vector2.Dot(v, v);
+            if (c2 <= c1)
+                return Vector2.Distance(point, lineEnd);
+            float b = c1 / c2;
+            Vector2 Pb = lineStart + b * v;
+            return Vector2.Distance(point, Pb);
+        }
     }
 }

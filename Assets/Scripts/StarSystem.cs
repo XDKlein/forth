@@ -94,6 +94,12 @@ namespace forth {
             }
         }
 
+        public StarSystem(string name, Vector2 position)
+        {
+            this.name = name;
+            this.position = position;
+        }
+
         public StarSystem(Vector2 position)
         {
             this.position = position;
@@ -114,6 +120,7 @@ namespace forth {
         {
             float distance = int.MaxValue;
             StarSystem destination = null;
+            
             foreach (StarSystem starSystem in starSystems)
             {
                 if (this == starSystem || this.IsIntersecting(starSystem, starSystems))
@@ -140,16 +147,24 @@ namespace forth {
         {
             foreach(StarSystem system in systems)
             {
-                foreach(StarSystemConnection connection in system.Connections)
+                if (system != this && system != destination)
                 {
-                    if (connection.IsConnecting(this) || connection.IsConnecting(destination))
-                        continue;
-                    if (connection.IsIntersectableBy(this, destination))
+                    if (Utility.PointToLineDistance(system.Position, this.Position, destination.Position) <= 1.5f)
                         return true;
+
+                        foreach (StarSystemConnection connection in system.Connections)
+                        {
+                            if (connection.IsConnecting(this) || connection.IsConnecting(destination))
+                                continue;
+                            if (connection.IsIntersectableBy(this, destination))
+                                return true;
+                        }
                 }
             }
             return false;
         }
+
+
 
         public List<StarSystem> GetConnectedNeighbours()
         {

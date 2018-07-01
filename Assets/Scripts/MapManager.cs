@@ -51,7 +51,8 @@ namespace forth {
         void PlaceStarSystems()
         {
             List<Vector2> positions = new List<Vector2>();
-            for (int count = 0; count < minStarSystems;)
+            int starSystemCount = (int)UnityEngine.Random.Range(minStarSystems, maxStarSystems);
+            for (int count = 0; count < starSystemCount;)
             {
                 Vector2 position = new Vector2((int)UnityEngine.Random.Range((mapSize.x / 2 - 2) * -1f, (mapSize.x / 2 - 2)),
                                                (int)UnityEngine.Random.Range((mapSize.y / 2 - 2) * -1f, (mapSize.x / 2 - 2)));
@@ -59,7 +60,7 @@ namespace forth {
                     continue;
 
                 positions.Add(position);
-                StarSystems.Add(new StarSystem(position));
+                StarSystems.Add(new StarSystem(count.ToString(), position));
                 count++;
             }
         }
