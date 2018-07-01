@@ -10,6 +10,7 @@ namespace forth
         public GameObject gameManager;
         public GameObject graphicsManager;
         public GameObject playerManager;
+        public GameObject interfaceManager;
         public GameObject soundManager;
 
         void Awake()
@@ -25,6 +26,9 @@ namespace forth
 
             if (PlayerManager.instance == null)
                 Instantiate(playerManager);
+
+            if (InterfaceManager.instance == null)
+                Instantiate(interfaceManager);
         }
     }
 }

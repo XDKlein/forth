@@ -4,8 +4,7 @@ using UnityEngine;
 using System;
 
 namespace forth {
-    [Serializable]
-    public class StarSystem
+    public class StarSystem : GameEntity
     {
         private string name = "System";
         private GameObject gameObject = null;

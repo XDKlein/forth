@@ -5,7 +5,6 @@ using System;
 
 namespace forth
 {
-    [Serializable]
     public class StarSystemConnection
     {
         private StarSystem[] starSystems = new StarSystem[2];

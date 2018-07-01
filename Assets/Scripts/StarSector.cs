@@ -5,7 +5,6 @@ using System;
 
 namespace forth
 {
-    [Serializable]
     public class StarSector
     {
         private string starSectorName = "Sector";

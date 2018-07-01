@@ -8,7 +8,7 @@ namespace forth
     {
         public static InputManager instance = null;
 
-        private CameraController camera = null;
+        private Camera camera = null;
 
         void Awake()
         {
@@ -17,7 +17,7 @@ namespace forth
             else if (instance != this)
                 Destroy(gameObject);
 
-            camera = Camera.main.GetComponent<CameraController>();
+            camera = Camera.main;
             DontDestroyOnLoad(gameObject);
         }
 
@@ -25,14 +25,33 @@ namespace forth
         {
             if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
             {
-                camera.Move(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
+                camera.GetComponent<CameraController>().Move(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
             }
 
             if (GetScroll() != 0)
             {
-                camera.Scroll(GetScroll());
+                camera.GetComponent<CameraController>().Scroll(GetScroll());
             }
-        }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                if (hit.collider?.gameObject.GetComponent<ObjectData>() != null)
+                {
+                    GameEntity entity = hit.collider.gameObject.GetComponent<ObjectData>().StoredData;
+                    if (entity.Is(typeof(StarSystem)))
+                    {
+                        StarSystem system = entity.ToStarSystem();
+                        InterfaceManager.instance.SystemClick(system);
+                    }
+                    if(entity.Is(typeof(MapBackground)))
+                    {
+                        InterfaceManager.instance.BackgroundClick();
+                    }
+                        
+                }
+            }
+        }   
 
         private float scrollValue = 0f;
         private float GetScroll()
