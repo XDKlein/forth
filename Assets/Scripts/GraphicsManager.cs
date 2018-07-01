@@ -17,8 +17,6 @@ namespace forth
         public GameObject connectionLine;
 
         public Material highlightMaterial;
-
-        //TODO: Move to interface processing.
         public GameObject systemTitle;
 
         void Awake()
