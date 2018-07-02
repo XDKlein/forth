@@ -6,6 +6,7 @@ namespace forth
     public class InterfaceManager : MonoBehaviour
     {
         public static InterfaceManager instance = null;
+        public GameObject systemInfo = null;
         private StarSystem selectedSystem = null;
 
         public StarSystem SelectedSystem
@@ -53,6 +54,7 @@ namespace forth
             if (SelectedSystem != null)
             {
                 Destroy(SelectedSystem.GameObject.GetComponent<Projector>());
+                HideSystemInfo();
                 SelectedSystem = null;
             }
         }
@@ -63,7 +65,20 @@ namespace forth
             {
                 GraphicsManager.instance.HighlightStarSystem(system.GameObject);
                 SelectedSystem = system;
+                ShowSystemInfo(system);
             }
+        }
+
+        public void ShowSystemInfo(StarSystem system)
+        {
+            GameObject systemInfoWindow = Instantiate(systemInfo);
+            systemInfoWindow.transform.SetParent(system.GameObject.transform);
+            systemInfoWindow.transform.localPosition = new Vector3(0.5f, 0.5f, 0);
+        }
+
+        public void HideSystemInfo()
+        {
+            Destroy(SelectedSystem.GameObject.transform.Find("SystemInfo(Clone)").gameObject);
         }
 
 

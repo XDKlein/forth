@@ -45,6 +45,7 @@ namespace forth
             foreach (StarSystem sol in GameManager.instance.map.StarSystems)
             {
                 GameObject systemGameObject = Instantiate(instance.starSprites[0]);
+                systemGameObject.name = sol.Name;
                 systemGameObject.AddComponent<ObjectData>().StoredData = sol;
                 
                 GameObject systemTitle = Instantiate(instance.systemTitle);
