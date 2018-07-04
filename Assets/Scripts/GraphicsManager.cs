@@ -36,7 +36,7 @@ namespace forth
         }
 
         void Update() {
-            ProcessBackground();
+            //ProcessBackground();
         }
 
         void SetupSolarSystems()
@@ -58,7 +58,7 @@ namespace forth
                                                                   systemPosition.y - Random.Range(-0.5f, 0.5f),
                                                                   -1);
                 float scale = Random.Range(0, 0.5f);
-                systemGameObject.transform.localScale = new Vector3(1 - scale, 1 - scale, 1);
+                //systemGameObject.transform.localScale = new Vector3(1 - scale, 1 - scale, 1);
                 sol.GameObject = systemGameObject;
             }
         }
@@ -144,7 +144,7 @@ namespace forth
             mainLayer.transform.localScale = new Vector3(scale.x, scale.y, 0);
 
             float tileSize = Mathf.Clamp(scale.x, 1f, 4f);
-            mainLayer.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(tileSize, tileSize);
+            //mainLayer.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(tileSize, tileSize);
         }
 
         ///<summary>
@@ -155,7 +155,7 @@ namespace forth
             parallaxLayer = Instantiate(parallaxLayer);
 
             parallaxLayer.transform.position = new Vector3(0, 0, 0);
-            parallaxLayer.transform.SetParent(Camera.main.transform);
+            //parallaxLayer.transform.SetParent(Camera.main.transform);
 
             float quadHeight = Camera.main.orthographicSize * 2.0f;
             float quadWidth = quadHeight * Screen.width / Screen.height;
