@@ -19,6 +19,12 @@ namespace forth
         public Material highlightMaterial;
         public GameObject systemTitle;
 
+        public GameObject MainMapGuide;
+
+        private List<GameObject> connections = new List<GameObject>();
+        private List<GameObject> systems = new List<GameObject>();
+        private List<GameObject> guides = new List<GameObject>();
+
         void Awake()
         {
             if (instance == null)
@@ -33,10 +39,71 @@ namespace forth
             SetupBackground();
             SetupSolarSystems();
             SetupSystemsConnections();
+
+            DrawMapGuides();
         }
 
+        //TODO: move this logic to inputcontroller
         void Update() {
+            if(connections != null)
+                foreach (GameObject connection in connections)
+                {
+                    connection.GetComponent<LineRenderer>().widthMultiplier = 0.01f * Camera.main.orthographicSize;
+                }
+            if (guides != null)
+                foreach (GameObject guide in guides)
+                {
+                    guide.GetComponent<LineRenderer>().widthMultiplier = 0.0075f * Camera.main.orthographicSize;
+                }
+
             //ProcessBackground();
+        }
+
+        //TODO: refactore
+        void DrawMapGuides()
+        {
+            float sizeX = GameManager.instance.map.mapSize.x - 2;
+            float sizeY = GameManager.instance.map.mapSize.y - 2;
+
+            GameObject upperGuide = Instantiate(MainMapGuide);
+            upperGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3((-sizeX / 2) - 1f, sizeY / 2));
+            upperGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3((sizeX / 2) + 1f, sizeY / 2));
+            guides.Add(upperGuide);
+
+            GameObject downGuide = Instantiate(MainMapGuide);
+            downGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3((-sizeX / 2) - 1f, -sizeY / 2));
+            downGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3((sizeX / 2) + 1f, -sizeY / 2));
+            guides.Add(downGuide);
+
+            GameObject leftGuide = Instantiate(MainMapGuide);
+            leftGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(-sizeX / 2, (sizeY / 2) + 1f ));
+            leftGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(-sizeX / 2, -sizeY / 2 - 1f ));
+            guides.Add(leftGuide);
+
+            GameObject rightGuide = Instantiate(MainMapGuide);
+            rightGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(sizeX / 2, (-sizeY / 2) - 1f));
+            rightGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(sizeX / 2, (sizeY / 2) + 1f));
+            guides.Add(rightGuide);
+
+            float indent = sizeX / 10;
+            while(indent < sizeX)
+            {
+                GameObject secondaryGuide = Instantiate(MainMapGuide);
+                secondaryGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(-sizeX / 2 + indent, (sizeY / 2) + 0.2f));
+                secondaryGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(-sizeX / 2 + indent, (-sizeY / 2) - 0.2f));
+                guides.Add(secondaryGuide);
+                indent += sizeX / 10;
+            }
+
+            indent = sizeY / 10;
+            while (indent < sizeY)
+            {
+                GameObject secondaryGuide = Instantiate(MainMapGuide);
+                secondaryGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(-sizeX / 2 - 0.2f, (sizeY / 2) - indent));
+                secondaryGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(sizeX / 2 - 0.2f, (sizeY / 2) - indent));
+                guides.Add(secondaryGuide);
+                indent += sizeY / 10;
+            }
         }
 
         void SetupSolarSystems()
@@ -60,6 +127,7 @@ namespace forth
                 float scale = Random.Range(0, 0.5f);
                 //systemGameObject.transform.localScale = new Vector3(1 - scale, 1 - scale, 1);
                 sol.GameObject = systemGameObject;
+                systems.Add(systemGameObject);
             }
         }
 
@@ -81,6 +149,7 @@ namespace forth
                 //
 
                 connection.GameObject = connectionGameObject;
+                connections.Add(connectionGameObject);
             }
         }
 

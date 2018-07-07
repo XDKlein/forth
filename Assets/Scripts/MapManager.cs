@@ -10,6 +10,8 @@ namespace forth {
         public int minStarSystems = 20;
         public int maxStarSystems = 50;
 
+        public Texture2D galaxyType;
+
         private List<StarSystem> starSystems = new List<StarSystem>();
         private List<StarSystemConnection> starSystemConnections = new List<StarSystemConnection>();
 
@@ -52,11 +54,17 @@ namespace forth {
         {
             List<Vector2> positions = new List<Vector2>();
             int starSystemCount = (int)UnityEngine.Random.Range(minStarSystems, maxStarSystems);
+
+            float mapToTextureRatio = mapSize.x / galaxyType.width;
             for (int count = 0; count < starSystemCount;)
             {
                 Vector2 position = new Vector2((int)UnityEngine.Random.Range((mapSize.x / 2 - 2) * -1f, (mapSize.x / 2 - 2)),
                                                (int)UnityEngine.Random.Range((mapSize.y / 2 - 2) * -1f, (mapSize.x / 2 - 2)));
                 if (!isPositionSuitable(positions, position))
+                    continue;
+
+                float greyscale = galaxyType.GetPixel((int)((position.x + mapSize.x / 2) / mapToTextureRatio), (int)((position.y + mapSize.y / 2) / mapToTextureRatio)).grayscale;
+                if (UnityEngine.Random.Range(0f, 1f) > greyscale)
                     continue;
 
                 positions.Add(position);

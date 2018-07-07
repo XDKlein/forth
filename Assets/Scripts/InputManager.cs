@@ -43,12 +43,11 @@ namespace forth
                     {
                         StarSystem system = entity.ToStarSystem();
                         InterfaceManager.instance.SystemClick(system);
-                    }
-                    if(entity.Is(typeof(MapBackground)))
-                    {
-                        InterfaceManager.instance.BackgroundClick();
-                    }
-                        
+                    }  
+                }
+                else
+                {
+                    InterfaceManager.instance.BackgroundClick();
                 }
             }
         }   
