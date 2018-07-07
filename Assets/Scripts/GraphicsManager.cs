@@ -35,7 +35,8 @@ namespace forth
             DontDestroyOnLoad(gameObject);
         }
 
-        void Start() {
+        void Start()
+        {
             SetupBackground();
             SetupSolarSystems();
             SetupSystemsConnections();
@@ -43,20 +44,21 @@ namespace forth
             DrawMapGuides();
         }
 
-        //TODO: move this logic to inputcontroller
-        void Update() {
-            if(connections != null)
-                foreach (GameObject connection in connections)
-                {
-                    connection.GetComponent<LineRenderer>().widthMultiplier = 0.01f * Camera.main.orthographicSize;
-                }
-            if (guides != null)
-                foreach (GameObject guide in guides)
-                {
-                    guide.GetComponent<LineRenderer>().widthMultiplier = 0.0075f * Camera.main.orthographicSize;
-                }
-
+        void Update()
+        {
             //ProcessBackground();
+        }
+
+        public void RescaleMapElements()
+        {
+            foreach (GameObject connection in connections)
+            {
+                connection.GetComponent<LineRenderer>().widthMultiplier = 0.01f * Camera.main.orthographicSize;
+            }
+            foreach (GameObject guide in guides)
+            {
+                guide.GetComponent<LineRenderer>().widthMultiplier = 0.0075f * Camera.main.orthographicSize;
+            }
         }
 
         //TODO: refactore
@@ -64,23 +66,28 @@ namespace forth
         {
             float sizeX = GameManager.instance.map.mapSize.x - 2;
             float sizeY = GameManager.instance.map.mapSize.y - 2;
+            GameObject guidesParent = new GameObject("Guides");
 
             GameObject upperGuide = Instantiate(MainMapGuide);
+            upperGuide.transform.SetParent(guidesParent.transform);
             upperGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3((-sizeX / 2) - 1f, sizeY / 2));
             upperGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3((sizeX / 2) + 1f, sizeY / 2));
             guides.Add(upperGuide);
 
             GameObject downGuide = Instantiate(MainMapGuide);
+            downGuide.transform.SetParent(guidesParent.transform);
             downGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3((-sizeX / 2) - 1f, -sizeY / 2));
             downGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3((sizeX / 2) + 1f, -sizeY / 2));
             guides.Add(downGuide);
 
             GameObject leftGuide = Instantiate(MainMapGuide);
+            leftGuide.transform.SetParent(guidesParent.transform);
             leftGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(-sizeX / 2, (sizeY / 2) + 1f ));
             leftGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(-sizeX / 2, -sizeY / 2 - 1f ));
             guides.Add(leftGuide);
 
             GameObject rightGuide = Instantiate(MainMapGuide);
+            rightGuide.transform.SetParent(guidesParent.transform);
             rightGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(sizeX / 2, (-sizeY / 2) - 1f));
             rightGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(sizeX / 2, (sizeY / 2) + 1f));
             guides.Add(rightGuide);
@@ -89,6 +96,7 @@ namespace forth
             while(indent < sizeX)
             {
                 GameObject secondaryGuide = Instantiate(MainMapGuide);
+                secondaryGuide.transform.SetParent(guidesParent.transform);
                 secondaryGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(-sizeX / 2 + indent, (sizeY / 2) + 0.2f));
                 secondaryGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(-sizeX / 2 + indent, (-sizeY / 2) - 0.2f));
                 guides.Add(secondaryGuide);
@@ -99,6 +107,7 @@ namespace forth
             while (indent < sizeY)
             {
                 GameObject secondaryGuide = Instantiate(MainMapGuide);
+                secondaryGuide.transform.SetParent(guidesParent.transform);
                 secondaryGuide.GetComponent<LineRenderer>().SetPosition(0, new Vector3(-sizeX / 2 - 0.2f, (sizeY / 2) - indent));
                 secondaryGuide.GetComponent<LineRenderer>().SetPosition(1, new Vector3(sizeX / 2 - 0.2f, (sizeY / 2) - indent));
                 guides.Add(secondaryGuide);

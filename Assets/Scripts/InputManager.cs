@@ -31,6 +31,7 @@ namespace forth
             if (GetScroll() != 0)
             {
                 camera.GetComponent<CameraController>().Scroll(GetScroll());
+                GraphicsManager.instance.RescaleMapElements();
             }
 
             if (Input.GetMouseButtonDown(0))
