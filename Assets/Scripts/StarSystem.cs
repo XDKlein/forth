@@ -94,9 +94,10 @@ namespace forth {
             }
         }
 
-        public StarSystem(string name, Vector2 position)
+        public StarSystem(string name, GameObject gameObject, Vector2 position)
         {
             this.name = name;
+            this.gameObject = gameObject;
             this.position = position;
         }
 

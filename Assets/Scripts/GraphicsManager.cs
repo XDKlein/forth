@@ -9,17 +9,20 @@ namespace forth
 
         public static GraphicsManager instance = null;
 
+        [Header("Background Graphics")]
         public float parralax = 2f;
         public GameObject mainLayer;
         public GameObject parallaxLayer;
+        public GameObject MainMapGuide;
 
+        [Header("Stars and Connections")]
         public GameObject[] starSprites;
         public GameObject connectionLine;
 
+
+        [Header("Interface Graphics")]
         public Material highlightMaterial;
         public GameObject systemTitle;
-
-        public GameObject MainMapGuide;
 
         private List<GameObject> connections = new List<GameObject>();
         private List<GameObject> systems = new List<GameObject>();
@@ -64,8 +67,8 @@ namespace forth
         //TODO: refactore
         void DrawMapGuides()
         {
-            float sizeX = GameManager.instance.map.mapSize.x - 2;
-            float sizeY = GameManager.instance.map.mapSize.y - 2;
+            float sizeX = GameManager.instance.map.map.size.x - 2;
+            float sizeY = GameManager.instance.map.map.size.y - 2;
             GameObject guidesParent = new GameObject("Guides");
 
             GameObject upperGuide = Instantiate(MainMapGuide);
@@ -120,13 +123,13 @@ namespace forth
             GameObject solParent = new GameObject("Systems");
             foreach (StarSystem sol in GameManager.instance.map.StarSystems)
             {
-                GameObject systemGameObject = Instantiate(instance.starSprites[0]);
+                GameObject systemGameObject = sol.GameObject;//Instantiate(sol.GameObject);
                 systemGameObject.name = sol.Name;
                 systemGameObject.AddComponent<ObjectData>().StoredData = sol;
                 
-                GameObject systemTitle = Instantiate(instance.systemTitle);
+                /*GameObject systemTitle = Instantiate(instance.systemTitle);
                 systemTitle.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = sol.Name;
-                systemTitle.transform.SetParent(systemGameObject.transform);
+                systemTitle.transform.SetParent(systemGameObject.transform);*/
 
                 systemGameObject.transform.SetParent(solParent.transform);
                 Vector2 systemPosition = sol.Position;
@@ -173,7 +176,7 @@ namespace forth
 
         void SetupBackground()
         {
-            SetupBackgroundMainLayer(GameManager.instance.map.mapSize);
+            SetupBackgroundMainLayer(GameManager.instance.map.map.size);
             SetupBackgroundParallaxLayer();
         }
 
@@ -221,7 +224,7 @@ namespace forth
             mainLayer.transform.position = new Vector3(0, 0, 0);
             mainLayer.transform.localScale = new Vector3(scale.x, scale.y, 0);
 
-            float tileSize = Mathf.Clamp(scale.x, 1f, 4f);
+            //float tileSize = Mathf.Clamp(scale.x, 1f, 4f);
             //mainLayer.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(tileSize, tileSize);
         }
 

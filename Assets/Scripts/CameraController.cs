@@ -16,7 +16,7 @@ namespace forth
 
         void Start()
         {
-            panLimit = new Vector2(GameManager.instance.map.mapSize.x + 5, GameManager.instance.map.mapSize.y + 5);
+            panLimit = new Vector2(GameManager.instance.map.map.size.x + 5, GameManager.instance.map.map.size.y + 5);
             Camera.main.transform.position = new Vector3(0, 0, -10);
             this.gameObject.GetComponent<Camera>().orthographicSize = (minZ + maxZ) / 2;
             this.maxZ = (panLimit.x / 2) * Screen.height / Screen.width;

@@ -6,11 +6,13 @@ using System;
 namespace forth {
     [Serializable]
     public class MapManager {
-        public Vector2 mapSize = new Vector2(50f, 50f);
+        public MapType map;
+
+       /* public Vector2 mapSize = new Vector2(50f, 50f);
         public int minStarSystems = 20;
         public int maxStarSystems = 50;
 
-        public Texture2D galaxyType;
+        public Texture2D galaxyType;*/
 
         private List<StarSystem> starSystems = new List<StarSystem>();
         private List<StarSystemConnection> starSystemConnections = new List<StarSystemConnection>();
@@ -53,24 +55,86 @@ namespace forth {
         void PlaceStarSystems()
         {
             List<Vector2> positions = new List<Vector2>();
-            int starSystemCount = (int)UnityEngine.Random.Range(minStarSystems, maxStarSystems);
+            int starSystemCount = (int)UnityEngine.Random.Range(map.minSystems, map.maxSystems);
+            List<SystemTypeAndProbability> systemTypes = map.systemTypes;
+            List<string> usedNames = new List<string>();
 
-            float mapToTextureRatio = mapSize.x / galaxyType.width;
             for (int count = 0; count < starSystemCount;)
             {
-                Vector2 position = new Vector2((int)UnityEngine.Random.Range((mapSize.x / 2 - 2) * -1f, (mapSize.x / 2 - 2)),
-                                               (int)UnityEngine.Random.Range((mapSize.y / 2 - 2) * -1f, (mapSize.x / 2 - 2)));
+                Vector2 position = new Vector2((int)UnityEngine.Random.Range((map.size.x / 2 - 2) * -1f, (map.size.x / 2 - 2)),
+                                               (int)UnityEngine.Random.Range((map.size.y / 2 - 2) * -1f, (map.size.x / 2 - 2)));
                 if (!isPositionSuitable(positions, position))
                     continue;
 
-                float greyscale = galaxyType.GetPixel((int)((position.x + mapSize.x / 2) / mapToTextureRatio), (int)((position.y + mapSize.y / 2) / mapToTextureRatio)).grayscale;
-                if (UnityEngine.Random.Range(0f, 1f) > greyscale)
+                if (UnityEngine.Random.Range(0f, 1f) > GetTemplateGreyscale(position.x, position.y))
                     continue;
 
                 positions.Add(position);
-                StarSystems.Add(new StarSystem(count.ToString(), position));
+
+                //TODO: refactore code below -> split into several functions or just move to it's own 
+                int index = 0;
+                StarSystem newSystem = null;
+                while (newSystem == null)
+                {
+                    if (systemTypes.Count == 0)
+                        break;
+                    if (index >= systemTypes.Count)
+                        index = 0;
+                    if (systemTypes.Count == 1 || UnityEngine.Random.Range(0f, 1f) <= systemTypes[index].probability)
+                    {
+                        SystemType type = systemTypes[index].systemType;
+                        string newName = null;
+                        foreach (string name in type.names)
+                        {
+                            if(!usedNames.Contains(name))
+                            {
+                                newName = name;
+                                break;
+                            }
+                        }
+                        if (newName == null && !type.useDefault)
+                        {
+                            systemTypes.RemoveAt(index);
+                            continue;
+                        }
+                        else if (newName == null && type.useDefault) //TODO: replace with default names
+                            newName = "System";
+
+                        int subindex = 0;
+                        while (newSystem == null)
+                        {
+                            if (type.gameObjects.Count == 0)
+                            {
+                                systemTypes.RemoveAt(index);
+                                break;
+                            }
+                            if (subindex >= type.gameObjects.Count)
+                                subindex = 0;
+                            if (type.gameObjects.Count == 1 || UnityEngine.Random.Range(0f, 1f) <= type.gameObjects[subindex].probability)
+                            {
+                                GameObject gameObject = GameObject.Instantiate(type.gameObjects[subindex].gameObject);
+                                float size = UnityEngine.Random.Range(type.minSizeMultiplier, type.maxSizeMultiplier);
+                                gameObject.transform.GetChild(0).localScale = new Vector3(size, 1, size);
+                                newSystem = new StarSystem(newName, gameObject, position);
+                            }
+                            subindex++;
+                        }
+                    }
+                    index++;
+                }
+
+                StarSystems.Add(newSystem);
+                usedNames.Add(newSystem.Name);
+                if (systemTypes.Count == 0)
+                    break;    
                 count++;
             }
+        }
+
+        float GetTemplateGreyscale(float x, float y)
+        {
+            float mapToTextureRatio = map.size.x / map.template.width;
+            return map.template.GetPixel((int)((x + map.size.x / 2) / mapToTextureRatio), (int)((y + map.size.y / 2) / mapToTextureRatio)).grayscale;
         }
 
         void ConnectStarSystems()
