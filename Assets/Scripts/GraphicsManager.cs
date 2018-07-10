@@ -16,13 +16,13 @@ namespace forth
         public GameObject MainMapGuide;
 
         [Header("Stars and Connections")]
-        public GameObject[] starSprites;
         public GameObject connectionLine;
 
 
         [Header("Interface Graphics")]
         public Material highlightMaterial;
         public GameObject systemTitle;
+        public GameObject constellationTitle;
 
         private List<GameObject> connections = new List<GameObject>();
         private List<GameObject> systems = new List<GameObject>();
@@ -43,6 +43,7 @@ namespace forth
             SetupBackground();
             SetupSolarSystems();
             SetupSystemsConnections();
+            SetupConstellations();
 
             DrawMapGuides();
         }
@@ -148,7 +149,7 @@ namespace forth
             GameObject connectionsParent = new GameObject("Connections");
             foreach (StarSystemConnection connection in GameManager.instance.map.StarSystemConnections)
             {
-                GameObject connectionGameObject = Instantiate(instance.connectionLine);
+                GameObject connectionGameObject = Instantiate(connectionLine);
 
                 connectionGameObject.transform.SetParent(connectionsParent.transform);
                 StarSystem[] connectedSystems = connection.StarSystems;
@@ -162,6 +163,18 @@ namespace forth
 
                 connection.GameObject = connectionGameObject;
                 connections.Add(connectionGameObject);
+            }
+        }
+
+        void SetupConstellations()
+        {
+            foreach(Constellation constellation in GameManager.instance.map.Constellations)
+            {
+                GameObject systemTitle = Instantiate(constellationTitle);
+                systemTitle.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = constellation.Name;
+                //systemTitle.transform.GetChild(0).GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, constellation.GetAngle());
+                systemTitle.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(constellation.GetWidth() / 2, constellation.GetHeight() / 2);
+                systemTitle.transform.position = constellation.Centroid;
             }
         }
 

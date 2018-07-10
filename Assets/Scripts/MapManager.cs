@@ -8,14 +8,9 @@ namespace forth {
     public class MapManager {
         public MapType map;
 
-       /* public Vector2 mapSize = new Vector2(50f, 50f);
-        public int minStarSystems = 20;
-        public int maxStarSystems = 50;
-
-        public Texture2D galaxyType;*/
-
         private List<StarSystem> starSystems = new List<StarSystem>();
         private List<StarSystemConnection> starSystemConnections = new List<StarSystemConnection>();
+        private List<Constellation> constellations = new List<Constellation>();
 
         public List<StarSystem> StarSystems
         {
@@ -43,6 +38,19 @@ namespace forth {
             }
         }
 
+        public List<Constellation> Constellations
+        {
+            get
+            {
+                return constellations;
+            }
+
+            set
+            {
+                constellations = value;
+            }
+        }
+
         ///<summary>
         ///This is a description of my function.
         ///</summary>
@@ -50,6 +58,7 @@ namespace forth {
         {
             PlaceStarSystems();
             ConnectStarSystems();
+            CreateConstellations();
         }
 
         void PlaceStarSystems()
@@ -159,6 +168,43 @@ namespace forth {
                         StarSystemConnections.Add(systemConnection);
                 }
             }
+        }
+
+        void CreateConstellations()
+        {
+            List<StarSystem> systems = new List<StarSystem>(starSystems);
+            for (int i = 0; i < systems.Count;)
+            {
+                List<StarSystem> constellation = GetConstellation(systems[i], new List<StarSystem>());
+                foreach(StarSystem constellationSystem in constellation)
+                {
+                    if(systems.Contains(constellationSystem))
+                        systems.Remove(constellationSystem);
+                }
+                constellations.Add(new Constellation("Constellation " + i, constellation));
+            }
+        }
+
+        List<StarSystem> GetConstellation(StarSystem system, List<StarSystem> systems)
+        {
+            systems.Add(system);
+            List<StarSystem> systemNeighbours = system.GetConnectedNeighbours();
+            if (systemNeighbours?.Count != null )
+            {
+                foreach (StarSystem neighbour in systemNeighbours)
+                {
+                    if (systems.Contains(neighbour))
+                        continue;
+                    List<StarSystem> subresult = GetConstellation(neighbour, new List<StarSystem>(systems));
+                    foreach(StarSystem subresultSystem in subresult)
+                    {
+                        if (systems.Contains(subresultSystem))
+                            continue;
+                        systems.Add(subresultSystem);
+                    }
+                }
+            }
+            return systems;
         }
 
         //IDEAS: ConnectionLength (vector2 difference) as alternatives choose parameter; Storing shortest lengths in every node to every node;

@@ -11,7 +11,7 @@ namespace forth {
         //private Player systemOwner = null;
         private Vector2 position = new Vector2(0, 0);
 
-        private StarSector sector = null;
+        private Constellation sector = null;
         private List<Planet> planets = new List<Planet>();
 
         private List<StarSystemConnection> connections = new List<StarSystemConnection>();
@@ -55,7 +55,7 @@ namespace forth {
             }
         }
 
-        public StarSector Sector
+        public Constellation Sector
         {
             get
             {
