@@ -34,7 +34,8 @@ namespace forth
         override public void OnInspectorGUI()
         {
             SystemType systemType = (SystemType)target;
-            
+            EditorUtility.SetDirty(systemType);
+
             EditorGUILayout.BeginVertical();
 
             generalSettings = EditorGUILayout.Foldout(generalSettings, "System General Settings", true);

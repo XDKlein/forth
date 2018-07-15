@@ -34,6 +34,7 @@ namespace forth
         override public void OnInspectorGUI()
         {
             MapType mapType = (MapType)target;
+            EditorUtility.SetDirty(mapType);
 
             EditorGUILayout.BeginVertical();
             string storedName = mapType.name;
@@ -102,6 +103,7 @@ namespace forth
                 string assetPath = AssetDatabase.GetAssetPath(mapType.GetInstanceID());
                 AssetDatabase.RenameAsset(assetPath, mapType.name);
                 AssetDatabase.SaveAssets();
+                
             }
             EditorGUILayout.EndVertical();
         }
