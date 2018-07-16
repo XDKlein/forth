@@ -77,30 +77,34 @@ namespace forth {
                     continue;
 
                 positions.Add(position);
-
-
-                SystemType systemType = map.systemTypes.Find(GetSystemType).systemType;
-                if (systemType == null)
-                    systemType = map.systemTypes.Find((x) => x.systemType.useDefault).systemType;
-
-                GameObject systemObject = systemType.gameObjects.Find((x) => UnityEngine.Random.Range(0f, 1f) <= x.probability).gameObject;
-                if (systemObject == null)
-                    systemObject = systemType.gameObjects[0].gameObject;
-                systemObject = GameObject.Instantiate(systemObject);
-                float size = UnityEngine.Random.Range(systemType.minSizeMultiplier, systemType.maxSizeMultiplier);
-                systemObject.transform.GetChild(0).localScale = new Vector3(size, 1, size);
-                
-                string systemName = (starSystems.Count == 0 && systemType.names.Count > 0) ? systemType.names[0] : "System";
-                foreach(StarSystem system in starSystems)
-                {
-                    systemName = systemType.names.Find((x) => (x != system.Name));
-                    if (systemName == null)
-                        systemName = "System"; //TODO: replace with default names
-                }
-
-                StarSystems.Add(new StarSystem(systemName, systemObject, position));
+                StarSystem system = CreateStarSystem(position);
+                StarSystems.Add(system);
                 count++;
             }
+        }
+
+        StarSystem CreateStarSystem(Vector2 position)
+        {
+            SystemType systemType = map.systemTypes.Find(GetSystemType).systemType;
+            if (systemType == null)
+                systemType = map.systemTypes.Find((x) => x.systemType.useDefault).systemType;
+
+            GameObject systemObject = systemType.gameObjects.Find((x) => UnityEngine.Random.Range(0f, 1f) <= x.probability).gameObject;
+            if (systemObject == null)
+                systemObject = systemType.gameObjects[0].gameObject;
+            systemObject = GameObject.Instantiate(systemObject);
+            float size = UnityEngine.Random.Range(systemType.minSizeMultiplier, systemType.maxSizeMultiplier);
+            systemObject.transform.GetChild(0).localScale = new Vector3(size, 1, size);
+
+            string systemName = (starSystems.Count == 0 && systemType.names.Count > 0) ? systemType.names[0] : "System";
+            foreach (StarSystem system in starSystems)
+            {
+                systemName = systemType.names.Find((x) => (x != system.Name));
+                if (systemName == null)
+                    systemName = "System"; //TODO: replace with default names
+            }
+
+            return new StarSystem(systemName, systemObject, position);
         }
 
         bool GetSystemType(SystemTypeAndProbability systemTypes)
