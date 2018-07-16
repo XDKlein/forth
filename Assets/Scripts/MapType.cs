@@ -100,6 +100,8 @@ namespace forth
             }
             if (GUILayout.Button("Save Object"))
             {
+                mapType.systemTypes.Sort((x, y) => y.probability.CompareTo(x.probability));
+
                 string assetPath = AssetDatabase.GetAssetPath(mapType.GetInstanceID());
                 AssetDatabase.RenameAsset(assetPath, mapType.name);
                 AssetDatabase.SaveAssets();

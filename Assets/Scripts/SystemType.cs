@@ -10,11 +10,14 @@ namespace forth
     public class SystemType : ScriptableObject
     {
         public string name = "NewSystemType";
-        public float minSizeMultiplier = 1f;
-        public float maxSizeMultiplier = 1f;
+        public float minSizeMultiplier = 1f, maxSizeMultiplier = 1f;
         public List<string> names = new List<string>();
-        public List<ObjectAndProbability> gameObjects = new List<ObjectAndProbability>();
         public bool useDefault = true;
+        public List<ObjectAndProbability> gameObjects = new List<ObjectAndProbability>();
+
+        public int minPlanets = 0, maxPlanets = 0;
+        public List<PlanetAndProbability> planets = new List<PlanetAndProbability>();
+
     }
 
     [Serializable]
@@ -24,12 +27,20 @@ namespace forth
         public float probability;
     }
 
+    [Serializable]
+    public struct PlanetAndProbability
+    {
+        public PlanetType planet;
+        public float probability;
+    }
+
     [CustomEditor(typeof(SystemType))]
     public class SystemTypeEditor : Editor
     {
         private bool generalSettings = true;
         private bool namesSettings = true;
         private bool gameObjectsSettings = true;
+        private bool planetsSettings = true;
 
         override public void OnInspectorGUI()
         {
@@ -117,10 +128,61 @@ namespace forth
                     systemType.gameObjects[i] = structure;
                 }
                 EditorGUILayout.EndVertical();
+                EditorGUI.indentLevel--;
+                EditorGUI.indentLevel--;
+            }
+
+            planetsSettings = EditorGUILayout.Foldout(planetsSettings, "Planet Types", true);
+            if (planetsSettings)
+            {
+                EditorGUI.indentLevel++;
+
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.Space(); EditorGUILayout.Space(); EditorGUILayout.Space();
+                GUILayout.Label("Planet count: ");
+                EditorGUIUtility.labelWidth = 40f;
+                systemType.minPlanets = EditorGUILayout.IntField("Min: ", systemType.minPlanets);
+                systemType.maxPlanets = EditorGUILayout.IntField("Max: ", systemType.maxPlanets);
+                EditorGUIUtility.labelWidth = 120f;
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space();
+
+                int objectsCount = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size: ", systemType.planets.Count));
+                while (objectsCount < systemType.planets.Count)
+                    systemType.planets.RemoveAt(systemType.planets.Count - 1);
+                while (objectsCount > systemType.planets.Count)
+                    systemType.planets.Add(new PlanetAndProbability());
+                EditorGUILayout.BeginVertical();
+                EditorGUI.indentLevel++;
+
+                if (objectsCount > 0)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    GUILayout.Label("Planet");
+                    GUILayout.Label("Probability");
+                    EditorGUILayout.EndHorizontal();
+                }
+                for (int i = 0; i < systemType.planets.Count; i++)
+                {
+                    PlanetAndProbability structure = systemType.planets[i];
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    structure.planet = (PlanetType)EditorGUILayout.ObjectField(systemType.planets[i].planet, typeof(PlanetType), false);
+                    structure.probability = EditorGUILayout.Slider(systemType.planets[i].probability, 0f, 1f);
+                    EditorGUILayout.EndHorizontal();
+                    systemType.planets[i] = structure;
+                }
+                EditorGUILayout.EndVertical();
             }
 
             if (GUILayout.Button("Save Object"))
             {
+                systemType.gameObjects.Sort((x, y) => y.probability.CompareTo(x.probability));
+                systemType.planets.Sort((x, y) => y.probability.CompareTo(x.probability));
+
                 string assetPath = AssetDatabase.GetAssetPath(systemType.GetInstanceID());
                 AssetDatabase.RenameAsset(assetPath, systemType.name);
                 AssetDatabase.SaveAssets();

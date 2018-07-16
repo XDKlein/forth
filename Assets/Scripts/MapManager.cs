@@ -65,8 +65,6 @@ namespace forth {
         {
             List<Vector2> positions = new List<Vector2>();
             int starSystemCount = (int)UnityEngine.Random.Range(map.minSystems, map.maxSystems);
-            List<SystemTypeAndProbability> systemTypes = map.systemTypes;
-            List<string> usedNames = new List<string>();
 
             for (int count = 0; count < starSystemCount;)
             {
@@ -80,64 +78,44 @@ namespace forth {
 
                 positions.Add(position);
 
-                //TODO: refactore code below -> split into several functions or just move to it's own 
-                int index = 0;
-                StarSystem newSystem = null;
-                while (newSystem == null)
-                {
-                    if (systemTypes.Count == 0)
-                        break;
-                    if (index >= systemTypes.Count)
-                        index = 0;
-                    if (systemTypes.Count == 1 || UnityEngine.Random.Range(0f, 1f) <= systemTypes[index].probability)
-                    {
-                        SystemType type = systemTypes[index].systemType;
-                        string newName = null;
-                        foreach (string name in type.names)
-                        {
-                            if(!usedNames.Contains(name))
-                            {
-                                newName = name;
-                                break;
-                            }
-                        }
-                        if (newName == null && !type.useDefault)
-                        {
-                            systemTypes.RemoveAt(index);
-                            continue;
-                        }
-                        else if (newName == null && type.useDefault) //TODO: replace with default names
-                            newName = "System";
 
-                        int subindex = 0;
-                        while (newSystem == null)
-                        {
-                            if (type.gameObjects.Count == 0)
-                            {
-                                systemTypes.RemoveAt(index);
-                                break;
-                            }
-                            if (subindex >= type.gameObjects.Count)
-                                subindex = 0;
-                            if (type.gameObjects.Count == 1 || UnityEngine.Random.Range(0f, 1f) <= type.gameObjects[subindex].probability)
-                            {
-                                GameObject gameObject = GameObject.Instantiate(type.gameObjects[subindex].gameObject);
-                                float size = UnityEngine.Random.Range(type.minSizeMultiplier, type.maxSizeMultiplier);
-                                gameObject.transform.GetChild(0).localScale = new Vector3(size, 1, size);
-                                newSystem = new StarSystem(newName, gameObject, position);
-                            }
-                            subindex++;
-                        }
-                    }
-                    index++;
+                SystemType systemType = map.systemTypes.Find(GetSystemType).systemType;
+                if (systemType == null)
+                    systemType = map.systemTypes.Find((x) => x.systemType.useDefault).systemType;
+
+                GameObject systemObject = systemType.gameObjects.Find((x) => UnityEngine.Random.Range(0f, 1f) <= x.probability).gameObject;
+                if (systemObject == null)
+                    systemObject = systemType.gameObjects[0].gameObject;
+                systemObject = GameObject.Instantiate(systemObject);
+                float size = UnityEngine.Random.Range(systemType.minSizeMultiplier, systemType.maxSizeMultiplier);
+                systemObject.transform.GetChild(0).localScale = new Vector3(size, 1, size);
+                
+                string systemName = (starSystems.Count == 0 && systemType.names.Count > 0) ? systemType.names[0] : "System";
+                foreach(StarSystem system in starSystems)
+                {
+                    systemName = systemType.names.Find((x) => (x != system.Name));
+                    if (systemName == null)
+                        systemName = "System"; //TODO: replace with default names
                 }
 
-                StarSystems.Add(newSystem);
-                usedNames.Add(newSystem.Name);
-                if (systemTypes.Count == 0)
-                    break;    
+                StarSystems.Add(new StarSystem(systemName, systemObject, position));
                 count++;
             }
+        }
+
+        bool GetSystemType(SystemTypeAndProbability systemTypes)
+        {
+            if(UnityEngine.Random.Range(0f, 1f) <= systemTypes.probability)
+            {
+                if(!systemTypes.systemType.useDefault)
+                    foreach(StarSystem system in starSystems)
+                    {
+                        if (systemTypes.systemType.names.Contains(system.Name))
+                            return false;
+                    }
+                return true;
+            }
+            return false;
         }
 
         float GetTemplateGreyscale(float x, float y)
