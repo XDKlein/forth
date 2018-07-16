@@ -6,10 +6,15 @@ namespace forth
 {
     public class Planet : ScriptableObject
     {
-        protected string planetName = "";
-        protected int planetCapacity = 0;
-        protected int planetBuildingSlots = 0;
-        protected int planetPopulation = 0;
-        protected List<Building> planetBUildings = new List<Building>();
+        protected string name = "";
+        protected int capacity = 0;
+        protected int buildingSlots = 0;
+        protected int population = 0;
+        protected List<Building> buildings = new List<Building>();
+
+        public Planet(string name)
+        {
+            this.name = name;
+        }
     }
 }

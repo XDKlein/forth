@@ -104,7 +104,16 @@ namespace forth {
                     systemName = "System"; //TODO: replace with default names
             }
 
-            return new StarSystem(systemName, systemObject, position);
+            List<Planet> planets = new List<Planet>();
+            for(int i = 0; i < UnityEngine.Random.Range(systemType.minPlanets, systemType.maxPlanets); i++)
+            {
+                PlanetType planet = systemType.planets.Find((x) => UnityEngine.Random.Range(0f, 1f) <= x.probability).planet;
+                if (planet == null)
+                    planet = systemType.planets[0].planet;
+                planets.Add(new Planet(planet.name));
+            }
+
+            return new StarSystem(systemName, systemObject, planets, position);
         }
 
         bool GetSystemType(SystemTypeAndProbability systemTypes)
