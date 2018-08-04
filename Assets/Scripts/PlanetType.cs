@@ -11,6 +11,7 @@ namespace forth
     {
         public string name = "NewPlanetType";
 
+#if UNITY_EDITOR
         [CustomEditor(typeof(PlanetType))]
         public class PlanetTypeEditor : Editor
         {
@@ -37,5 +38,6 @@ namespace forth
                 }
             }
         }
+#endif
     }
 }

@@ -1,10 +1,22 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace forth
 {
     public class Utility
     {
+        public static Dictionary<string, Vector2> directions = new Dictionary<string, Vector2>(){
+            { "SW", new Vector2(-1, -1) },
+            { "NW", new Vector2(-1, 1) },
+            { "NE", new Vector2(1, 1) },
+            { "SE", new Vector2(1, -1) },
+            { "W", new Vector2(-1, 0) },
+            { "N", new Vector2(0, 1) },
+            { "E", new Vector2(1, 0) },
+            { "S", new Vector2(0, -1) }
+    };
+
         public static bool LineIntesection(Vector2 aStart, Vector2 aEnd, Vector2 bStart, Vector2 bEnd)
         {
             Vector2 a = aEnd - aStart;

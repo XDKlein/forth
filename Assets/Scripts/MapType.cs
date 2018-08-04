@@ -24,7 +24,7 @@ namespace forth
         public SystemType systemType;
         public float probability;
     }
-
+#if UNITY_EDITOR
     [CustomEditor(typeof(MapType))]
     public class MapTypeEditor : Editor
     {
@@ -110,4 +110,5 @@ namespace forth
             EditorGUILayout.EndVertical();
         }
     }
+#endif
 }

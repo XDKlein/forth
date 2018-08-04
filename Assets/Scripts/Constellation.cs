@@ -12,6 +12,9 @@ namespace forth
         private Vector2 centroid = new Vector2(0, 0);
         private List<Constellation> connectedConstellation = new List<Constellation>();
 
+        private Border border;
+        public List<Vector2> oldBorder;
+
         public string Name
         {
             get
@@ -64,16 +67,34 @@ namespace forth
             }
         }
 
+        public Border Border
+        {
+            get
+            {
+                return border;
+            }
+
+            set
+            {
+                border = value;
+            }
+        }
+
         public Constellation(string name, List<StarSystem> systems)
         {
             this.name = name;
             this.systems = systems;
+            foreach (StarSystem system in systems)
+            {
+                system.Constellation = this;
+            }
             this.centroid = CalculateGeometricCenter();
+            Border = new Border(this);  
         }
 
         public Vector2 CalculateGeometricCenter()
         {
-            Vector2 summary = new Vector2();
+            //Vector2 summary = new Vector2();
             Vector2 farLeft = systems[0].Position;
             Vector2 farRight = systems[0].Position;
             Vector2 farUp = systems[0].Position;
@@ -134,6 +155,7 @@ namespace forth
             }
             return Vector2.Angle(farUp, farDown);
         }
+        
 
     }
 }

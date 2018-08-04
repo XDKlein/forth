@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -11,10 +12,11 @@ namespace forth {
         //private Player systemOwner = null;
         private Vector2 position = new Vector2(0, 0);
 
-        private Constellation sector = null;
+        private Constellation constellation = null;
         private List<Planet> planets = new List<Planet>();
 
         private List<StarSystemConnection> connections = new List<StarSystemConnection>();
+        private Dictionary<StarSystem, float> closestSystems = new Dictionary<StarSystem, float>();
 
         public string Name
         {
@@ -55,16 +57,16 @@ namespace forth {
             }
         }
 
-        public Constellation Sector
+        public Constellation Constellation
         {
             get
             {
-                return sector;
+                return constellation;
             }
 
             set
             {
-                sector = value;
+                constellation = value;
             }
         }
 
@@ -94,6 +96,19 @@ namespace forth {
             }
         }
 
+        public Dictionary<StarSystem, float> ClosestSystems
+        {
+            get
+            {
+                return closestSystems;
+            }
+
+            set
+            {
+                closestSystems = value;
+            }
+        }
+
         public StarSystem(string name, GameObject gameObject, List<Planet> planets, Vector2 position)
         {
             this.name = name;
@@ -105,6 +120,11 @@ namespace forth {
         public StarSystem(Vector2 position)
         {
             this.position = position;
+        }
+
+        public KeyValuePair<StarSystem, float> GetClosestSystem()
+        {
+            return ClosestSystems.First();
         }
 
         public bool IsConnectedTo(StarSystem system)
@@ -125,10 +145,19 @@ namespace forth {
             
             foreach (StarSystem starSystem in starSystems)
             {
-                if (this == starSystem || this.IsIntersecting(starSystem, starSystems))
+                if (this == starSystem)
+                {
                     continue;
+                }
 
                 float calculatedDistance = this.DistanceTo(starSystem);
+                ClosestSystems.Add(starSystem, calculatedDistance);
+
+                if (this.IsIntersecting(starSystem, starSystems))
+                {
+                    continue;
+                }
+
                 if (calculatedDistance < distance)
                 {
                     if (starSystem.IsConnectedTo(this))
@@ -142,6 +171,7 @@ namespace forth {
                     }
                 }
             }
+            ClosestSystems = ClosestSystems.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             return destination != null ? new StarSystemConnection(this, destination) : null;
         }
 

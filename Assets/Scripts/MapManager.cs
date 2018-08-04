@@ -56,9 +56,25 @@ namespace forth {
         ///</summary>
         public void GenerateMap()
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             PlaceStarSystems();
+            watch.Stop();
+            Debug.Log("Place Star Systems: " + watch.ElapsedMilliseconds / 1000);
+
+            watch = System.Diagnostics.Stopwatch.StartNew();
             ConnectStarSystems();
+            watch.Stop();
+            Debug.Log("Connect Star Systems: " + watch.ElapsedMilliseconds / 1000);
+
+            watch = System.Diagnostics.Stopwatch.StartNew();
             CreateConstellations();
+            watch.Stop();
+            Debug.Log("Create Constellations: " + watch.ElapsedMilliseconds / 1000);
+
+            watch = System.Diagnostics.Stopwatch.StartNew();
+            DrawConstellationsBorders();
+            watch.Stop();
+            Debug.Log("Draw Constellations Borders: " + watch.ElapsedMilliseconds / 1000);
         }
 
         void PlaceStarSystems()
@@ -73,7 +89,7 @@ namespace forth {
                 if (!isPositionSuitable(positions, position))
                     continue;
 
-                if (UnityEngine.Random.Range(0f, 1f) > GetTemplateGreyscale(position.x, position.y))
+                if (UnityEngine.Random.Range(0f, 1f) >= GetTemplateGreyscale(position.x, position.y))
                     continue;
 
                 positions.Add(position);
@@ -196,6 +212,75 @@ namespace forth {
                 }
             }
             return systems;
+        }
+
+        void DrawConstellationsBorders()
+        {
+            List<Border.BorderPoint> points = new List<Border.BorderPoint>();
+            Dictionary<Vector2, Border.BorderPoint> processedPoints = new Dictionary<Vector2, Border.BorderPoint>();
+
+            foreach (Constellation constellation in constellations)
+            {
+                foreach (StarSystem system in constellation.Systems)
+                {
+                    Border.BorderPoint point = new Border.BorderPoint(system.Position, system);
+                    points.Add(point);
+                    processedPoints.Add(point.coordinates, point);
+                }
+            }
+
+            bool isDrawingBorder = true;
+            while (isDrawingBorder)
+            {
+                isDrawingBorder = false;
+                List<Border.BorderPoint> copyPoints = new List<Border.BorderPoint>(points);
+                copyPoints.RemoveAll(x => x.isProcessed || x.isPositioned);
+
+                foreach (Border.BorderPoint point in copyPoints)
+                {
+                    isDrawingBorder = true;
+                    bool commitPoint = false;
+                    foreach (Vector2 direction in Utility.directions.Values)
+                    {
+                        commitPoint = commitPoint || MovePointTo(direction, point, processedPoints, points);
+                    }
+
+                    if (commitPoint)
+                    {
+                        point.isPositioned = true;
+                    }
+                    else
+                    {
+                        point.isProcessed = true;
+                    }
+                }
+            }
+            foreach (Constellation constellation in constellations)
+            {
+                constellation.Border.RemoveProcessed();
+                constellation.Border.ConnectWithNeighbours();
+                constellation.Border.SmoothBorder();
+                constellation.oldBorder = new List<Vector2>(constellation.Border.Points.Keys);
+                constellation.Border.SortBorderPointsList();
+            }
+        }
+        bool MovePointTo(Vector2 direction, Border.BorderPoint point, Dictionary<Vector2, Border.BorderPoint> processedPoints, List<Border.BorderPoint> points)
+        {
+            bool commitPoint = false;
+
+            Vector2 nextPosition = point.coordinates + direction;
+            if (Mathf.Abs(nextPosition.x) > map.size.x / 2 || Mathf.Abs(nextPosition.y) > map.size.y / 2)
+                commitPoint = true;
+            else if (GetTemplateGreyscale(point.coordinates.x, point.coordinates.y) <= 0.05f)
+                commitPoint = true;
+            else if (!processedPoints.ContainsKey(nextPosition))
+            {
+                processedPoints.Add(nextPosition, point);
+                points.Add(new Border.BorderPoint(nextPosition, point.parentSystem));
+            }
+            else if (processedPoints[nextPosition].parentSystem.Constellation != point.parentSystem.Constellation)
+                commitPoint = true;
+            return commitPoint;
         }
 
         //IDEAS: ConnectionLength (vector2 difference) as alternatives choose parameter; Storing shortest lengths in every node to every node;

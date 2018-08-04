@@ -23,6 +23,10 @@ namespace forth
         public Material highlightMaterial;
         public GameObject systemTitle;
         public GameObject constellationTitle;
+        public GameObject constellationBorder;
+
+        public bool drawGizmo = false;
+        public GameObject borderGizmo;
 
         private List<GameObject> connections = new List<GameObject>();
         private List<GameObject> systems = new List<GameObject>();
@@ -170,11 +174,77 @@ namespace forth
         {
             foreach(Constellation constellation in GameManager.instance.map.Constellations)
             {
-                GameObject systemTitle = Instantiate(constellationTitle);
-                systemTitle.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = constellation.Name;
+                //GameObject systemTitle = Instantiate(constellationTitle);
+                //systemTitle.transform.GetChild(0).GetComponent<UnityEditor.TextM>().text = constellation.Name;
                 //systemTitle.transform.GetChild(0).GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, constellation.GetAngle());
-                systemTitle.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(constellation.GetWidth() / 2, constellation.GetHeight() / 2);
-                systemTitle.transform.position = constellation.Centroid;
+                //systemTitle.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(constellation.GetWidth() / 2, constellation.GetHeight() / 2);
+                //systemTitle.transform.position = constellation.Centroid;
+            }
+
+            foreach (Constellation constellation in GameManager.instance.map.Constellations)
+            {
+                /*int vsizeX = 1;
+                int vsizeY = 1;
+
+                List<Vector2> vertices2D = new List<Vector2>();
+                foreach (Vector2 borderPoint in constellation.Border.Points.Keys)
+                {
+                    if (vertices2D.Find(x => x.x == borderPoint.x) == Vector2.zero)
+                        vsizeX++;
+                    if (vertices2D.Find(x => x.y == borderPoint.y) == Vector2.zero)
+                        vsizeY++;
+                    vertices2D.Add(borderPoint);
+                }
+
+                GameObject overlay = Instantiate(constellationOverlay);
+                overlay.transform.position = Vector2.zero;
+
+                Triangulator tr = new Triangulator(vertices2D.ToArray());
+                int[] indices = tr.Triangulate();
+
+                Vector3[] vertices = new Vector3[vertices2D.Count];
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i] = new Vector3(vertices2D[i].x, vertices2D[i].y, 0);
+                }
+
+                Mesh msh = new Mesh();
+                msh.vertices = vertices;
+                msh.triangles = indices;
+
+                msh.RecalculateNormals();   
+                msh.RecalculateBounds();
+
+                Bounds bounds = msh.bounds;
+                Vector2[] uvs = new Vector2[vertices.Length];
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    uvs[i] = new Vector2(vertices[i].x / bounds.size.x, vertices[i].y / bounds.size.x);
+                }
+                msh.uv = uvs;
+
+                MeshFilter filter = overlay.GetComponent<MeshFilter>();
+                filter.mesh = msh;*/
+
+                if (drawGizmo)
+                {
+                    foreach (Vector2 borderPoint in constellation.Border.Points.Keys)
+                    {
+                        GameObject gizmo = Instantiate(borderGizmo);
+                        gizmo.transform.position = borderPoint;
+                        gizmo.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+                    }
+                }
+
+                GameObject borderLine = Instantiate(constellationBorder);
+                borderLine.GetComponent<LineRenderer>().positionCount = constellation.Border.Points.Count;
+                int index = 0;
+                foreach (Vector2 borderPoint in constellation.Border.Points.Keys)
+                {
+                    borderLine.GetComponent<LineRenderer>().SetPosition(index, borderPoint);
+                    index++;
+                }
+                //break;
             }
         }
 

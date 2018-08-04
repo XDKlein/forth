@@ -33,7 +33,7 @@ namespace forth
         public PlanetType planet;
         public float probability;
     }
-
+#if UNITY_EDITOR
     [CustomEditor(typeof(SystemType))]
     public class SystemTypeEditor : Editor
     {
@@ -190,4 +190,5 @@ namespace forth
             EditorGUILayout.EndVertical();
         }
     }
+#endif
 }
